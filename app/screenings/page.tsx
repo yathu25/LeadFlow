@@ -7,7 +7,7 @@ import { fetchScreenings } from "@/lib/screenings";
 
 type Screening = Awaited<ReturnType<typeof fetchScreenings>>[number];
 
-const statusClass = (status: string) => {
+const statusClass = (status: string | undefined) => {
   switch (status) {
     case "COMPLETED":
       return "badge badge-success";
@@ -18,6 +18,10 @@ const statusClass = (status: string) => {
     default:
       return "badge badge-default";
   }
+};
+
+const formatUpdatedAt = (value: Screening["updated_at"]) => {
+  return value ? new Date(value).toLocaleString() : "—";
 };
 
 export default function ScreeningListPage() {
@@ -79,7 +83,7 @@ export default function ScreeningListPage() {
                   <td>
                     <span className={statusClass(s.status)}>{s.status}</span>
                   </td>
-                  <td>{new Date(s.updated_at).toLocaleString()}</td>
+                  <td>{formatUpdatedAt(s.updated_at)}</td>
                 </tr>
               ))}
             </tbody>

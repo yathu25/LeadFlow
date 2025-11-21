@@ -1,13 +1,27 @@
 "use client";
 
 import { Shell } from "@/components/Shell";
-import { createScreening } from "@/lib/screenings";
+import { createScreening, type CreateScreeningPayload } from "@/lib/screenings";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type React from "react";
+
+type FormState = {
+  user_id: number;
+  target_name: string;
+  target_type: CreateScreeningPayload["target"]["type"];
+  target_external_id: string;
+  target_organism: string;
+  library_id: number | string;
+  screening_type: CreateScreeningPayload["screening_type"];
+  priority: CreateScreeningPayload["priority"];
+  requested_compute: CreateScreeningPayload["requested_compute"];
+  notes: string;
+};
 
 export default function NewScreeningPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     user_id: 1,
     target_name: "",
     target_type: "PROTEIN",
@@ -22,8 +36,9 @@ export default function NewScreeningPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const updateField =
-    (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    <K extends keyof FormState>(field: K) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+      setForm((prev) => ({ ...prev, [field]: e.target.value as FormState[K] }));
     };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -118,7 +133,7 @@ export default function NewScreeningPage() {
               Library
               <select
                 value={form.library_id}
-                onChange={updateField("library_id") as any}
+                onChange={updateField("library_id")}
               >
                 <option value={3}>LeadFactory Core Set</option>
                 <option value={4}>Custom Library A</option>
